@@ -6,7 +6,6 @@ import org.json.JSONException
 import org.json.JSONObject
 import kotlin.jvm.Throws
 
-
 internal class ConfigResponse(
     val configs: Map<String, List<Flag>>,
     val eTag: String
@@ -19,18 +18,18 @@ internal class ConfigResponse(
             return runCatching {
                 val jsonObject = JSONObject(json)
                 val configsObject = jsonObject.getJSONObject("config")
-                val configNames = configsObject.names()
+                val configNames = configsObject.keys()
                 val configs = mutableMapOf<String, List<Flag>>()
-                for (index in 0 until configNames.length()) {
-                    val configName = configNames.getString(index)
+                while (configNames.hasNext()) {
+                    val configName = configNames.next()
                     val ungzippedValue = configsObject.getString(configName)
                         .b64decode()
                         .ungzip()
                     val flagsObject = JSONObject(ungzippedValue)
-                    val flagNames = JSONObject(ungzippedValue).names()
+                    val flagNames = JSONObject(ungzippedValue).keys()
                     val flags = mutableListOf<Flag>()
-                    for (fi in 0 until flagNames.length()) {
-                        val flagName = flagNames.getString(fi)
+                    while (flagNames.hasNext()) {
+                        val flagName = flagNames.next()
                         val flagObject = flagsObject.getJSONObject(flagName)
                         val flag = when (flagObject.getInt("type")) {
                             10 -> Flag.BoolFlag(

@@ -19,7 +19,7 @@ internal class ApiService(
         return withContext(Dispatchers.IO) {
             val url = HttpUrl.Builder()
                 .scheme("https")
-                .host(BASE_HOST)
+                .host("sync2.fipper.io")
                 .addPathSegment("config")
                 .addQueryParameter("apiToken", token)
                 .addQueryParameter("item", projectId.toString())
@@ -54,7 +54,7 @@ internal class ApiService(
         return withContext(Dispatchers.IO) {
             val url = HttpUrl.Builder()
                 .scheme("https")
-                .host(BASE_HOST)
+                .host("sync2.fipper.io")
                 .addPathSegment("hash")
                 .addQueryParameter("apiToken", token)
                 .addQueryParameter("item", projectId.toString())
@@ -74,9 +74,5 @@ internal class ApiService(
                 throw FipperFailure.NetworkFailure(it.message ?: it.toString())
             }
         }
-    }
-
-    companion object {
-        private const val BASE_HOST = "sync2.fipper.io"
     }
 }
