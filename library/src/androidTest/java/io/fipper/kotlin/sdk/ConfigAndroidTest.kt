@@ -1,10 +1,13 @@
 package io.fipper.kotlin.sdk
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.fipper.kotlin.sdk.internal.ConfigResponse
 import org.junit.Assert
 import org.junit.Test
+import org.junit.runner.RunWith
 
-class ConfigResponseTest {
+@RunWith(AndroidJUnit4::class)
+class ConfigAndroidTest {
 
     private val payload = """
     {
@@ -15,8 +18,14 @@ class ConfigResponseTest {
     }
     """
 
+    private val failedPayload = """
+    {
+        "eTag": "e1d186b87842e449a2f0eea5d9f205f9460ad09b"
+    }
+    """
+
     @Test
-    fun parseConfigResponse() {
+    fun succeedParseConfig() {
         runCatching {
             ConfigResponse.fromJson(payload)
         }.onSuccess {
@@ -52,13 +61,24 @@ class ConfigResponseTest {
                         Assert.assertTrue("Invalid flag type", flag is Flag.JsonFlag)
                         (flag as Flag.JsonFlag).run {
                             Assert.assertEquals(available, true)
-                            //TODO check json
+                            Assert.assertEquals(value, "{\"test\": 123}")
                         }
                     }
                 }
             }
         }.onFailure {
+            Assert.fail("Invalid payload")
+        }
+    }
+
+    @Test
+    fun failedParseConfig() {
+        runCatching {
+            ConfigResponse.fromJson(failedPayload)
+        }.onFailure {
             Assert.assertTrue("Invalid failure type", it is FipperFailure)
+        }.onSuccess {
+            Assert.fail("Invalid payload")
         }
     }
 }
